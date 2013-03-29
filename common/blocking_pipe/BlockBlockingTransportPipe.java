@@ -19,12 +19,17 @@ public class BlockBlockingTransportPipe extends BlockContainer {
 	
 	@Override
 	public boolean renderAsNormalBlock() {
-		return true;
+		return false;
 	}
 	
 	@Override
 	public boolean isOpaqueCube() {
-		return true;
+		return false;
+	}
+	
+	@Override
+	public int getRenderType() {
+		return RenderIds.blockingTransportPipe;
 	}
 
 }
