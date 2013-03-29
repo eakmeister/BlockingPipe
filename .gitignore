@@ -8,3 +8,11 @@ bin/
 lib/
 resources/sound3/
 stats/
+crash-reports/
+resources/music/
+resources/newmusic/
+resources/newsound/
+resources/pe/humble.png
+resources/sound/
+resources/streaming/
+saves/
