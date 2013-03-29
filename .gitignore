@@ -1,0 +1,10 @@
+*.class
+bin/
+*.log
+*.log.*
+.classpath
+.project
+.settings
+lib/
+resources/sound3/
+stats/
