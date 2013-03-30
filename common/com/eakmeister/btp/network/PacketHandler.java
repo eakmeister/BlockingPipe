@@ -8,6 +8,8 @@ import java.io.IOException;
 import com.eakmeister.btp.BlockingPipe;
 import com.eakmeister.btp.tileentity.TileBlockingPipe;
 
+import net.minecraft.block.Block;
+import net.minecraft.item.ItemStack;
 import net.minecraft.network.INetworkManager;
 import net.minecraft.network.packet.Packet250CustomPayload;
 import cpw.mods.fml.common.network.IPacketHandler;
@@ -26,7 +28,16 @@ public class PacketHandler implements IPacketHandler {
 				int y = dis.readInt();
 				int z = dis.readInt();
 				int connectionMask = dis.readInt();
-				BlockingPipe.proxy.handleTileEntityPacket(x, y, z, connectionMask);
+				ItemStack[] slots = new ItemStack[6];
+				
+				for (int i = 0; i < 6; i++) {
+					int item_id = dis.readInt();
+					
+					if (item_id != 0) {
+						slots[i] = new ItemStack(item_id, dis.readInt(), 0);
+					}
+				}
+				BlockingPipe.proxy.handleTileEntityPacket(x, y, z, connectionMask, slots);
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

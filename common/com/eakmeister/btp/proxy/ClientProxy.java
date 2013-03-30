@@ -10,6 +10,7 @@ import com.eakmeister.btp.tileentity.TileBlockingPipe;
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.client.registry.ClientRegistry;
 import cpw.mods.fml.client.registry.RenderingRegistry;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.client.MinecraftForgeClient;
@@ -42,7 +43,7 @@ public class ClientProxy extends CommonProxy {
 	}
 	
 	@Override
-	public void handleTileEntityPacket(int x, int y, int z, int connectionMask) {
+	public void handleTileEntityPacket(int x, int y, int z, int connectionMask, ItemStack[] slots) {
 		TileEntity tile = FMLClientHandler.instance().getClient().theWorld.getBlockTileEntity(x, y, z);
 		
 		if (tile == null || !(tile instanceof TileBlockingPipe)) {
@@ -50,6 +51,7 @@ public class ClientProxy extends CommonProxy {
 		}
 		
 		TileBlockingPipe pipe = (TileBlockingPipe)tile;
-		//pipe.setConnectionMask(connectionMask);
+		pipe.setConnectionMask(connectionMask);
+		pipe.slots = slots;
 	}
 }

@@ -39,11 +39,11 @@ public class BlockingPipe {
 		blockBlockingTransportPipe = new BlockBlockingTransportPipe(BlockIds.BLOCKING_TRANSPORT_PIPE);
 		GameRegistry.registerBlock(blockBlockingTransportPipe, "Blocking Pipe");
 		GameRegistry.addRecipe(new ItemStack(blockBlockingTransportPipe), new Object [] {"   ", " i ", "   ", Character.valueOf('i'), Item.stick});
+		proxy.registerTileEntities();
 	}
 	
 	@Init
 	public void init(FMLInitializationEvent event) {
-		proxy.registerTileEntities();
 		proxy.registerRenderInformation();
 	}
 	

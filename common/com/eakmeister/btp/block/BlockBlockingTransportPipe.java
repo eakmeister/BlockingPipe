@@ -13,6 +13,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IconRegister;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Icon;
@@ -73,7 +74,6 @@ public class BlockBlockingTransportPipe extends BlockContainer {
 		TileEntity tile = world.getBlockTileEntity(x, y, z);
 		
 		if (tile == null || !(tile instanceof TileBlockingPipe)) {
-			System.out.println("TileEntity not found");
 			return;
 		}
 		
@@ -117,6 +117,7 @@ public class BlockBlockingTransportPipe extends BlockContainer {
 			connectionMask &= ~TileBlockingPipe.CONNECTION_BACK;
 		
 		pipe.setConnectionMask(connectionMask);
+		world.markBlockForUpdate(x, y, z);
 	}
 
 	@Override
@@ -125,9 +126,24 @@ public class BlockBlockingTransportPipe extends BlockContainer {
 	}
 	
 	@Override
-	public int onBlockPlaced(World world, int x, int y, int z, int side, float par6, float par7, float par8, int meta) {
-		super.onBlockPlaced(world, x, y, z, side, par6, par7, par8, meta);
+	public void onBlockAdded(World world, int x, int y, int z) {
+		super.onBlockAdded(world, x, y, z);
 		updateConnections(world, x, y, z);
-		return meta;
+	}
+	
+	@Override
+	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int par6, float par7, float par8, float par9) {
+		TileEntity tile = world.getBlockTileEntity(x, y, z);
+		
+		if (tile == null || !(tile instanceof TileBlockingPipe)) {
+			return false;
+		}
+		
+		TileBlockingPipe pipe = (TileBlockingPipe)tile;
+		pipe.powered = !pipe.powered;
+		world.markBlockForUpdate(x, y, z);
+		System.out.println("Block " + (pipe.powered ? "powered" : "unpowered"));
+		
+		return true;
 	}
 }

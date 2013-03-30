@@ -53,12 +53,11 @@ public class RendererBlockingTransportPipe extends TileEntitySpecialRenderer {
 			GL11.glDisable(GL11.GL_LIGHTING);
 			{
 				for (int slot = 0; slot < 6; slot++) {
-					//System.out.println(pipe.connectionMask);
-					if (pipe.slots[slot] != null && ((1 << slot) & pipe.getConnectionMask()) != 0) {
+					if (pipe.slots[slot] != null) {
 						GL11.glPushMatrix();
 						{
 							GL11.glTranslatef((float)x, (float)y, (float)z);
-							float progress_adjust = pipe.progress[slot] / 512.0f;
+							float progress_adjust = 2 * pipe.progress[slot] / TileBlockingPipe.SPEED;
 							
 							if (slot == TileBlockingPipe.SLOT_UP)
 								GL11.glTranslatef(0.5f, 0.5f + progress_adjust, 0.5f);
@@ -69,9 +68,9 @@ public class RendererBlockingTransportPipe extends TileEntitySpecialRenderer {
 							else if (slot == TileBlockingPipe.SLOT_RIGHT)
 								GL11.glTranslatef(0.5f + progress_adjust, 0.5f, 0.5f);
 							else if (slot == TileBlockingPipe.SLOT_FRONT)
-								GL11.glTranslatef(0.5f, 0.5f, 0.5f - progress_adjust);
-							else if (slot == TileBlockingPipe.SLOT_BACK)
 								GL11.glTranslatef(0.5f, 0.5f, 0.5f + progress_adjust);
+							else if (slot == TileBlockingPipe.SLOT_BACK)
+								GL11.glTranslatef(0.5f, 0.5f, 0.5f - progress_adjust);
 							
 							GL11.glScalef(0.7f, 0.7f, 0.7f);
 							dummyEntityItem.setEntityItemStack(pipe.slots[slot]);
