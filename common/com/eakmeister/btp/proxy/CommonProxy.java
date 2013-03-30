@@ -1,6 +1,6 @@
 package com.eakmeister.btp.proxy;
 
-import com.eakmeister.btp.tileentity.BlockingPipe;
+import com.eakmeister.btp.tileentity.TileBlockingPipe;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
@@ -17,7 +17,7 @@ public class CommonProxy implements IGuiHandler {
 	
 	public void registerTileEntities()
 	{
-		GameRegistry.registerTileEntity(BlockingPipe.class, "net.minecraft.src.blocking_pipe.BlockingTransportPipe");
+		GameRegistry.registerTileEntity(TileBlockingPipe.class, "com.eakmeister.btp.tileentity.TileBlockingPipe");
 	}
 	
 	@Override
@@ -37,5 +37,9 @@ public class CommonProxy implements IGuiHandler {
 	public World getClientWorld()
 	{
 		return null;
+	}
+	
+	public void handleTileEntityPacket(int x, int y, int z, int connectionMask) {
+		
 	}
 }

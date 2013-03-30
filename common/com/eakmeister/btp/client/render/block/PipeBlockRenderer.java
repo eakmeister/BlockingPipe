@@ -1,11 +1,14 @@
 package com.eakmeister.btp.client.render.block;
 
+import java.util.Random;
+
 import com.eakmeister.btp.proxy.CommonProxy;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.IBlockAccess;
+import net.minecraft.world.World;
 import cpw.mods.fml.client.registry.ISimpleBlockRenderingHandler;
 
 public class PipeBlockRenderer implements ISimpleBlockRenderingHandler {
@@ -19,8 +22,7 @@ public class PipeBlockRenderer implements ISimpleBlockRenderingHandler {
 	@Override
 	public boolean renderWorldBlock(IBlockAccess world, int x, int y, int z, Block block, int modelId, RenderBlocks renderer) {
 		TileEntity tile = world.getBlockTileEntity(x, y, z);
-		
-		// TODO Auto-generated method stub
+		renderer.renderStandardBlock(block, x, y, z);
 		return false;
 	}
 
@@ -33,5 +35,4 @@ public class PipeBlockRenderer implements ISimpleBlockRenderingHandler {
 	public int getRenderId() {
 		return CommonProxy.pipeModel;
 	}
-
 }

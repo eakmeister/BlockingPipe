@@ -2,7 +2,7 @@ package com.eakmeister.btp.client.model;
 
 import org.lwjgl.opengl.GL11;
 
-import com.eakmeister.btp.tileentity.BlockingPipe;
+import com.eakmeister.btp.tileentity.TileBlockingPipe;
 
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.renderer.Tessellator;
@@ -22,7 +22,7 @@ public class ModelBlockingTransportPipe extends ModelBase {
 		renderCube(1.0f, 0.0f, 0.0f);
 	}
 
-	public void render(BlockingPipe blockingPipe, double x, double y, double z) {
+	public void render(TileBlockingPipe blockingPipe, double x, double y, double z) {
 		GL11.glPushMatrix();
 		{
 			GL11.glDisable(GL11.GL_LIGHTING);

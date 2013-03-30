@@ -31,7 +31,7 @@ public class BlockingPipe {
 	@Instance
 	public static BlockingPipe instance;
 	
-	@SidedProxy(clientSide = "com.eakmeister.BlockingPipe.proxy.ClientProxy", serverSide = "com.eakmeister.BlockingPipe.proxy.CommonProxy")
+	@SidedProxy(clientSide = "com.eakmeister.btp.proxy.ClientProxy", serverSide = "com.eakmeister.btp.proxy.CommonProxy")
 	public static CommonProxy proxy;
 	
 	@PreInit
