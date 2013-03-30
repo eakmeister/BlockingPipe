@@ -1,4 +1,9 @@
-package blocking_pipe;
+package com.eakmeister.btp;
+
+import com.eakmeister.btp.block.BlockBlockingTransportPipe;
+import com.eakmeister.btp.lib.BlockIds;
+import com.eakmeister.btp.network.PacketHandler;
+import com.eakmeister.btp.proxy.CommonProxy;
 
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.SidedProxy;
@@ -26,7 +31,7 @@ public class BlockingPipe {
 	@Instance
 	public static BlockingPipe instance;
 	
-	@SidedProxy(clientSide = "blocking_pipe.ClientProxy", serverSide = "blocking_pipe.CommonProxy")
+	@SidedProxy(clientSide = "com.eakmeister.BlockingPipe.proxy.ClientProxy", serverSide = "com.eakmeister.BlockingPipe.proxy.CommonProxy")
 	public static CommonProxy proxy;
 	
 	@PreInit

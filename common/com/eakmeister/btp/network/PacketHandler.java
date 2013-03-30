@@ -1,4 +1,5 @@
-package blocking_pipe;
+package com.eakmeister.btp.network;
+
 
 import net.minecraft.network.INetworkManager;
 import net.minecraft.network.packet.Packet250CustomPayload;
