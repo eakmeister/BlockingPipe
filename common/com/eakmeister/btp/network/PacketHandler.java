@@ -37,7 +37,16 @@ public class PacketHandler implements IPacketHandler {
 						slots[i] = new ItemStack(item_id, dis.readInt(), 0);
 					}
 				}
-				BlockingPipe.proxy.handleTileEntityPacket(x, y, z, connectionMask, slots);
+				
+				float[] progress = new float[6];
+				for (int i = 0; i < 6; i++)
+					progress[i] = dis.readFloat();
+				
+				int[] directions = new int[6];
+				for (int i = 0; i < 6; i++)
+					directions[i] = dis.readInt();
+				
+				BlockingPipe.proxy.handleTileEntityPacket(x, y, z, connectionMask, slots, progress, directions);
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

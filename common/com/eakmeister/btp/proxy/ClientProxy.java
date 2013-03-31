@@ -43,7 +43,7 @@ public class ClientProxy extends CommonProxy {
 	}
 	
 	@Override
-	public void handleTileEntityPacket(int x, int y, int z, int connectionMask, ItemStack[] slots) {
+	public void handleTileEntityPacket(int x, int y, int z, int connectionMask, ItemStack[] slots, float[] progress, int[] directions) {
 		TileEntity tile = FMLClientHandler.instance().getClient().theWorld.getBlockTileEntity(x, y, z);
 		
 		if (tile == null || !(tile instanceof TileBlockingPipe)) {
@@ -53,5 +53,7 @@ public class ClientProxy extends CommonProxy {
 		TileBlockingPipe pipe = (TileBlockingPipe)tile;
 		pipe.setConnectionMask(connectionMask);
 		pipe.slots = slots;
+		pipe.progress = progress;
+		pipe.direction = directions;
 	}
 }

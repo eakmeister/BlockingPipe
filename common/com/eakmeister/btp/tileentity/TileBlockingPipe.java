@@ -13,7 +13,7 @@ import net.minecraft.tileentity.TileEntity;
 
 public class TileBlockingPipe extends TileEntity {
 	
-	public static final int SPEED = 255; // lower is faster
+	public static final int SPEED = 50; // lower is faster
 	
 	public static final int CONNECTION_UP = 1;
 	public static final int CONNECTION_DOWN = 2;
@@ -70,12 +70,71 @@ public class TileBlockingPipe extends TileEntity {
 		for (int i = 0; i < inventory.getSizeInventory(); i++) {
 			slots[slot] = inventory.decrStackSize(i, 1);
 			
-			if (slots[slot] != null)
+			if (slots[slot] != null) {
+				progress[slot] = SPEED;
+				direction[slot] = DIR_IN;
+				System.out.println("Got block from inventory to slot " + slot);
 				break;
+			}
+
+		}
+	}
+	
+	private boolean tryPushBlock(int x, int y, int z, int slot) {
+		TileEntity tile = worldObj.getBlockTileEntity(x, y, z);
+		
+		if (tile == null) {
+			return false;
 		}
 		
-		progress[slot] = SPEED;
-		direction[slot] = DIR_IN;
+		if (tile instanceof IInventory) {
+			IInventory inventory = (IInventory) tile;
+
+			for (int i = 0; i < inventory.getSizeInventory(); i++) {
+				if (inventory.isStackValidForSlot(i, slots[slot])) {
+					int currentSize = 0;
+					
+					if (inventory.getStackInSlot(i) != null) {
+						if (!inventory.getStackInSlot(i).isItemEqual(slots[slot]))
+							continue;
+						
+						currentSize = inventory.getStackInSlot(i).stackSize;
+					}
+					
+					int itemsToPush = slots[slot].stackSize;
+					if (itemsToPush + currentSize > inventory.getInventoryStackLimit())
+						itemsToPush = inventory.getInventoryStackLimit() - currentSize;
+					
+					ItemStack newStack = slots[slot].copy();
+					newStack.stackSize = itemsToPush + currentSize;
+					inventory.setInventorySlotContents(i, newStack);
+					
+					slots[slot].stackSize -= itemsToPush;
+					System.out.println("Pushed block to inventory");
+					
+					if (slots[slot].stackSize <= 0) {
+						slots[slot] = null;
+						return true;
+					}
+				}
+			}
+		}
+		else if (tile instanceof TileBlockingPipe) {
+			TileBlockingPipe pipe = (TileBlockingPipe)tile;
+			int otherslot = (slot % 2 == 0 ? slot + 1 : slot - 1);
+			
+			if (pipe.slots[otherslot] == null) {
+				pipe.slots[otherslot] = slots[slot];
+				pipe.direction[otherslot] = DIR_IN;
+				pipe.progress[otherslot] = SPEED;
+				slots[slot] = null;
+				
+				System.out.println("Pushed block from slot " + slot + " to slot " + otherslot);
+				return true;
+			}
+		}
+		
+		return false;
 	}
 	
 	@Override
@@ -83,14 +142,18 @@ public class TileBlockingPipe extends TileEntity {
 		super.updateEntity();
 		++tick_counter;
 		
-		if (tick_counter % 20 == 0 && powered) {
-			tryPullBlock(xCoord - 1, yCoord, zCoord, SLOT_LEFT);
-			tryPullBlock(xCoord + 1, yCoord, zCoord, SLOT_RIGHT);
-			tryPullBlock(xCoord, yCoord - 1, zCoord, SLOT_DOWN);
-			tryPullBlock(xCoord, yCoord + 1, zCoord, SLOT_UP);
-			tryPullBlock(xCoord, yCoord, zCoord - 1, SLOT_BACK);
-			tryPullBlock(xCoord, yCoord, zCoord + 1, SLOT_FRONT);
+		if (tick_counter % 20 == 0) {
+			if (powered) {
+				tryPullBlock(xCoord - 1, yCoord, zCoord, SLOT_LEFT);
+				tryPullBlock(xCoord + 1, yCoord, zCoord, SLOT_RIGHT);
+				tryPullBlock(xCoord, yCoord - 1, zCoord, SLOT_DOWN);
+				tryPullBlock(xCoord, yCoord + 1, zCoord, SLOT_UP);
+				tryPullBlock(xCoord, yCoord, zCoord - 1, SLOT_BACK);
+				tryPullBlock(xCoord, yCoord, zCoord + 1, SLOT_FRONT);
+			}
+			
 			worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+			tick_counter = 0;
 		}
 		
 		for (int i = 0; i < 6; i++) {
@@ -99,13 +162,32 @@ public class TileBlockingPipe extends TileEntity {
 					progress[i]++;
 					
 					if (progress[i] > SPEED) {
-						progress[i] = SPEED;
+						boolean success = false;
+						
+						if (i == SLOT_LEFT)
+							success = tryPushBlock(xCoord - 1, yCoord, zCoord, i);
+						else if (i == SLOT_RIGHT)
+							success = tryPushBlock(xCoord + 1, yCoord, zCoord, i);
+						else if (i == SLOT_UP)
+							success = tryPushBlock(xCoord, yCoord + 1, zCoord, i);
+						else if (i == SLOT_DOWN)
+							success = tryPushBlock(xCoord, yCoord - 1, zCoord, i);
+						else if (i == SLOT_FRONT)
+							success = tryPushBlock(xCoord, yCoord, zCoord + 1, i);
+						else if (i == SLOT_BACK)
+							success = tryPushBlock(xCoord, yCoord, zCoord - 1, i);
+						
+						worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+						
+						if (!success)
+							progress[i] = SPEED;
 					}
 				}
 				else {
+					System.out.println("Progress for slot " + i + ": " + progress[i]);
 					progress[i]--;
 					
-					if (progress[i] < 0) {
+					if (progress[i] <= 0) {
 						for (int j = 0; j < 6; j++) {
 							if (slots[j] == null && ((1 << j) & connectionMask) != 0) {
 								slots[j] = slots[i];
@@ -113,6 +195,7 @@ public class TileBlockingPipe extends TileEntity {
 								direction[j] = DIR_OUT;
 								progress[j] = 0;
 								worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+								System.out.println("Transfered block from slot " + i + " to slot " + j);
 								break;
 							}
 						}
@@ -144,7 +227,12 @@ public class TileBlockingPipe extends TileEntity {
 					dos.writeInt(slots[i].stackSize);
 				}
 			}
-			System.out.println(Integer.toHexString(System.identityHashCode(this)) + ": " + connectionMask);
+			
+			for (int i = 0; i < 6; i++)
+				dos.writeFloat(progress[i]);
+			
+			for (int i = 0; i < 6; i++)
+				dos.writeInt(direction[i]);
 
 		} catch (IOException e) {
 			e.printStackTrace();
